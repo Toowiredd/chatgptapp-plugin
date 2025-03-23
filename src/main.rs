@@ -12,6 +12,11 @@ struct Plugin {
     description: Option<String>,
     link: Option<String>,
     url: Option<Vec<String>>,
+    dependencies: Option<Vec<String>>,
+    compatibility: Option<String>,
+    update_url: Option<String>,
+    changelog: Option<String>,
+    last_updated: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -26,9 +31,26 @@ fn load_config() -> Config {
     serde_yaml::from_str(&contents).expect("Failed to parse nofwl.yml")
 }
 
+fn check_dependencies(plugin: &Plugin, config: &Config) -> Result<(), String> {
+    if let Some(dependencies) = &plugin.dependencies {
+        for dependency in dependencies {
+            if !config.plugins.iter().any(|p| &p.name == dependency) {
+                return Err(format!("Missing dependency: {}", dependency));
+            }
+        }
+    }
+    Ok(())
+}
+
 fn initialize_plugins(config: &Config) {
     for plugin in &config.plugins {
         println!("Initializing plugin: {}", plugin.name);
+
+        if let Err(err) = check_dependencies(plugin, config) {
+            println!("Error initializing plugin {}: {}", plugin.name, err);
+            continue;
+        }
+
         if let Some(urls) = &plugin.url {
             for url in urls {
                 println!("Connecting to Val.town API endpoint: {}", url);
