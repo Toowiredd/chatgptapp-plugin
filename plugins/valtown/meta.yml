@@ -5,3 +5,9 @@ description: NoFWL Val.town Plugin
 link: https://github.com/yourusername/nofwl/tree/main/plugins/valtown
 url:
   - https://api.val.town
+dependencies: []
+compatibility: "1.0.0"
+update_url: "https://github.com/yourusername/nofwl/tree/main/plugins/valtown"
+changelog: |
+  - Initial release
+last_updated: "2023-04-01"
