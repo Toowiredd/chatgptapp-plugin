@@ -1,6 +1,8 @@
 use std::fs::File;
 use std::io::Read;
 use serde::Deserialize;
+use tauri::Manager;
+use tauri_plugin::PluginBuilder;
 
 #[derive(Debug, Deserialize)]
 struct Plugin {
@@ -39,5 +41,16 @@ fn initialize_plugins(config: &Config) {
 fn main() {
     let config = load_config();
     initialize_plugins(&config);
+
+    tauri::Builder::default()
+        .plugin(PluginBuilder::default().build())
+        .setup(|app| {
+            let main_window = app.get_window("main").unwrap();
+            main_window.set_title("NoFWL").unwrap();
+            Ok(())
+        })
+        .run(tauri::generate_context!())
+        .expect("error while running tauri application");
+
     println!("Hello, NoFWL!");
 }
